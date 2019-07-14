@@ -24,8 +24,7 @@ module.exports = function(server) {
 
 	
 		getqtdEstoque(req.params,function(data){
-			if(data.length < 1){
-								
+			if(data.length < 1){				
 				req.params.qtdDisponivel = req.params.qtdTotal
 				req.params.qtdAlocada = 0
 				
@@ -36,10 +35,8 @@ module.exports = function(server) {
 						return next(new errors.InternalError(err.message))
 					next()
 					}
-
 					res.send(201)
 					next()
-
 				})
 			}
 			else{
@@ -51,22 +48,15 @@ module.exports = function(server) {
 				req.params.qtdDisponivel = qtdDisponivel
 				req.params.qtdAlocada = data.qtdAlocada
 				req.params._id = data._id
-				console.log(data._id)
 				const dados = req.params
-				atualizarEstoque({_id: data._id},req.params)
-				/*let pEstoque = new Estoque(req.params)
-
-				/*pEstoque.updateOne({_id:data._id},{$set: req.params},function(err) {
-					if (err) {
-						console.error(err)
-						return next(new errors.InternalError(err.message))
-					next()
-					}
-
-					res.send(201)
-					next()
-
-				})*/
+				atualizarEstoque({_id: data._id},req.params,(err,res)=>{
+					    if (err) {
+							res.status(404)
+							res.json({status:404})
+						}
+						res.status(200)
+						res.json({status:200})
+				})
 			}
 		 })	
 	})

@@ -1,6 +1,7 @@
 var MongoClient = require('mongodb');
-var url = "mongodb://localhost:27017/";
-
+var config = require('../config')
+var url = config.db.uri;
+console.log(url)
 /*MongoClient.connect(url, function(err, db) {
   if (err) throw err;
   var dbo = db.db("mydb");
@@ -13,13 +14,13 @@ var url = "mongodb://localhost:27017/";
 */
 
 module.exports = function (params,callback){
-MongoClient.connect(url, function(err, db) {
+MongoClient.connect(url, function(err, dbk) {
   if (err) throw err;
-  var dbo = db.db("azul");
+  var dbo = dbk.db("azul");
   dbo.collection("estoques").find({codigo: params.codigo}).toArray(function(err, result) {
     if (err) throw err;
 	callback(result)
-  	  db.close();
+  	  dbk.close();
   });
 });
 	
