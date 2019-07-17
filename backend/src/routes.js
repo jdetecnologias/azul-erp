@@ -49,13 +49,13 @@ module.exports = function(server) {
 				req.params.qtdAlocada = data.qtdAlocada
 				req.params._id = data._id
 				const dados = req.params
-				atualizarEstoque({_id: data._id},req.params,(err,res)=>{
-					    if (err) {
-							res.status(404)
+				atualizarEstoque({_id: data._id},req.params,(linhasAfetadas)=>{
+					    if (linhasAfetadas <= 0 ) {		
 							res.json({status:404})
-						}
+						}else{
 						res.status(200)
 						res.json({status:200})
+						}
 				})
 			}
 		 })	

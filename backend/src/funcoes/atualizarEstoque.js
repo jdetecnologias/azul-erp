@@ -10,8 +10,7 @@ MongoClient.connect(url, function(err, dbk) {
   var myquery = query;
   var newvalues = { $set: dados};
   dbo.collection("estoques").updateOne(myquery, newvalues, function(err, res) {
-
-	callback(err, res)
+	callback(res.result.nModified)
     dbk.close();
   });
 }); 	
