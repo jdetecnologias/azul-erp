@@ -31,12 +31,12 @@ module.exports = function(server) {
 				let lEstoque = new Estoque(req.params)
 				lEstoque.save(function(err) {
 					if (err) {
-						console.error(err)
-						return next(new errors.InternalError(err.message))
-					next()
+						res.json({status:404})
+					}else{
+						res.status(201)
+						res.json({status:200})
 					}
-					res.send(201)
-					next()
+
 				})
 			}
 			else{
