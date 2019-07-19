@@ -20,10 +20,12 @@ module.exports = function(server) {
 	server.get('/vendas',Sales.query())
 	server.post('/vendas',Sales.insert())
 	server.get('/estoque',lEstoque.query())
+	server.get('/move',MoveEstoque.query())
 	server.post('/estoque',(req,res,next)=>{
 
 	
 		getqtdEstoque(req.params,function(data){
+			req.params.movimento = 'entrada'
 			if(data.length < 1){				
 				req.params.qtdDisponivel = req.params.qtdTotal
 				req.params.qtdAlocada = 0
@@ -33,10 +35,16 @@ module.exports = function(server) {
 					if (err) {
 						res.json({status:404})
 					}else{
-						res.status(201)
-						res.json({status:200})
-					}
+						this.gravarMovimentacaoEstoque(req.params, function(err){
+							if (err) {
+								res.json({status:404})
+							}else{
+								res.status(201)
+								res.json({status:200})
+							}
+						})
 
+					}
 				})
 			}
 			else{
@@ -50,16 +58,49 @@ module.exports = function(server) {
 				req.params._id = data._id
 				const dados = req.params
 				atualizarEstoque({_id: data._id},req.params,(linhasAfetadas)=>{
-					    if (linhasAfetadas <= 0 ) {		
-							res.json({status:404})
-						}else{
-						res.status(200)
-						res.json({status:200})
-						}
+					if(linhasAfetadas <= 0 ) {		
+						res.json({status:404})
+					}else{
+						this.gravarMovimentacaoEstoque(req.params, function(err){
+							if (err) {
+								res.json({status:404})
+							}else{
+								res.status(201)
+								res.json({status:200})
+							}
+						})
+					}
 				})
 			}
+
 		 })	
 	})
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 		/*server.get('/entrada', (req, res, next) => {
 		MovimentacaoEstoque.apiQuery(req.params, function(err, docs) {
@@ -132,3 +173,17 @@ module.exports = function(server) {
 		})
 	})*/
 }    
+function gravarMovimentacaoEstoque(params,callback) {
+	
+	const dados = {
+					codigo: params.codigo
+					, qtd: params.qtdTotal
+					, movimento:params.movimento
+				}
+				console.log(dados)
+	let lMovEstoque = new  MoveEstoque(dados)
+	lMovEstoque.save(function(err) {
+		
+		callback(err)
+	})
+}

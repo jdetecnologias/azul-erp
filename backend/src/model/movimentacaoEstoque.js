@@ -5,7 +5,7 @@ const timestamps = require('mongoose-timestamp');
 const MovimentacaoEstoqueSchema = new mongoose.Schema(
 	{
 		codigo: {
-			type: Number,
+			type: String,
 			required: true,
 			trim: true,
 		},
@@ -14,12 +14,12 @@ const MovimentacaoEstoqueSchema = new mongoose.Schema(
 			required: true,
 			min:0
 		},
-		tipo:{
+		movimento:{
 			type: String,
 			required:true,
-			enum: ['entrada','saida']
+			enum: ['entrada','saida','alocado']
 		}
-	},
+	}, 
 	{ minimize: false },
 );
 
