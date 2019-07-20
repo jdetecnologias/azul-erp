@@ -5,6 +5,7 @@ const MovimentacaoEstoque = require('./model/movimentacaoEstoque')
 const Produto = require('./model/produto')
 const Vendas = require('./model/vendas')
 const Estoque = require('./model/estoque')
+const novoMovimentacaoEstoque = require('./funcoes/movimentacaoEstoque')
 const product = restifyMongoose(Produto)
 const MoveEstoque = restifyMongoose(MovimentacaoEstoque)
 const Sales = restifyMongoose(Vendas)
@@ -26,6 +27,7 @@ module.exports = function(server) {
 	
 		getqtdEstoque(req.params,function(data){
 			req.params.movimento = 'entrada'
+			req.params.qtd = req.params.qtdTotal
 			if(data.length < 1){				
 				req.params.qtdDisponivel = req.params.qtdTotal
 				req.params.qtdAlocada = 0
@@ -35,7 +37,7 @@ module.exports = function(server) {
 					if (err) {
 						res.json({status:404})
 					}else{
-						this.gravarMovimentacaoEstoque(req.params, function(err){
+						novoMovimentacaoEstoque(req.params, function(err){
 							if (err) {
 								res.json({status:404})
 							}else{
@@ -61,7 +63,7 @@ module.exports = function(server) {
 					if(linhasAfetadas <= 0 ) {		
 						res.json({status:404})
 					}else{
-						this.gravarMovimentacaoEstoque(req.params, function(err){
+						novoMovimentacaoEstoque(req.params, function(err){
 							if (err) {
 								res.json({status:404})
 							}else{
@@ -173,17 +175,4 @@ module.exports = function(server) {
 		})
 	})*/
 }    
-function gravarMovimentacaoEstoque(params,callback) {
-	
-	const dados = {
-					codigo: params.codigo
-					, qtd: params.qtdTotal
-					, movimento:params.movimento
-				}
-				console.log(dados)
-	let lMovEstoque = new  MoveEstoque(dados)
-	lMovEstoque.save(function(err) {
-		
-		callback(err)
-	})
-}
+

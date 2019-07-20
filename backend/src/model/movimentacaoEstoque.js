@@ -18,9 +18,23 @@ const MovimentacaoEstoqueSchema = new mongoose.Schema(
 			type: String,
 			required:true,
 			enum: ['entrada','saida','alocado']
+		},
+		saldoTotal: {
+			type: Number,
+			required: true,
+			min:0
+		},
+		saldoDisponivel: {
+			type: Number,
+			required: true,
+			min:0
+		},
+		saldoAlocado: {
+			type: Number,
+			required: true,
+			min:0
 		}
-	}, 
-	{ minimize: false },
+	}
 );
 
 MovimentacaoEstoqueSchema.plugin(mongooseStringQuery);
