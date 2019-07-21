@@ -1,7 +1,6 @@
 var MongoClient = require('mongodb');
 var config = require('../config')
 var url = config.db.uri;
-console.log(url)
 /*MongoClient.connect(url, function(err, db) {
   if (err) throw err;
   var dbo = db.db("mydb");

@@ -8,29 +8,39 @@ const MovimentacaoEstoqueSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 			trim: true,
-		},
-		qtd: {
+		}
+		,qtd: {
 			type: Number,
 			required: true,
 			min:0
-		},
-		movimento:{
+		}
+		,movimento:{
 			type: String,
 			required:true,
 			enum: ['entrada','saida','alocado']
-		},
-		saldoTotal: {
+		}
+		,saldoTotal: {
 			type: Number,
 			required: true,
 			min:0
-		},
-		saldoDisponivel: {
+		}
+		,saldoDisponivel: {
 			type: Number,
 			required: true,
 			min:0
-		},
-		saldoAlocado: {
+		}
+		,saldoAlocado: {
 			type: Number,
+			required: true,
+			min:0
+		}
+		,numeroDocumento: {
+			type: String,
+			required: false,
+			min:0
+		}
+		,tipoDocumento: {
+			type: String,
 			required: true,
 			min:0
 		}

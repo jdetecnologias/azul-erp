@@ -19,7 +19,56 @@ module.exports = function(server) {
 	server.get('/entrada',MoveEstoque.query())
 	server.post('/entrada',MoveEstoque.insert())
 	server.get('/vendas',Sales.query())
-	server.post('/vendas',Sales.insert())
+	
+	server.post('/vendas',(req,res,next)=>{
+		const Venda = new Vendas(req.params)
+		
+		Venda.save(function(err){
+			if (err){
+				res.json({status:404})
+				}else{
+				novoMovimentacaoEstoque(req.params,function(err,docs){
+					if (err) {
+						res.json({status:404})
+					}else{
+						res.status(201)
+						res.json({status:200})
+					}
+				})
+				
+				/*itens.map(item=>{
+					let params = {}
+					params.codigo = item.produto
+					params.movimento = 'saida'
+					params.tipoDocumento = 'venda' 
+					params.qtd = item.qtd
+					getqtdEstoque(params,function(data){
+						data = data[0]
+						params._id = data._id 
+						if(req.params.status == 'PENDENTE'){
+							params.qtdTotal = data.qtdTotal
+							params.qtdDisponivel = data.qtdTotal - item.qtd
+							params.qtdAlocada = item.qtd + data.qtdAlocada
+						}else{ 
+							params.qtdTotal = data.qtdTotal - item.qtd
+							params.qtdDisponivel = +params.qtdTotal
+							params.qtdAlocada = data.qtdAlocada	 
+						} 
+
+						novoMovimentacaoEstoque(params, function(err){
+							if (err) {
+								res.json({status:404})
+							}else{
+								res.status(201)
+								res.json({status:200})
+							}
+						})// novoMovimentacaoEstoque
+					})	// getqtdEstoque
+				})*/ // itens.map*/
+			}//else
+		})// vendas.save
+	})//server.post
+	
 	server.get('/estoque',lEstoque.query())
 	server.get('/move',MoveEstoque.query())
 	server.post('/estoque',(req,res,next)=>{
@@ -27,6 +76,7 @@ module.exports = function(server) {
 	
 		getqtdEstoque(req.params,function(data){
 			req.params.movimento = 'entrada'
+			req.params.tipoDocumento = 'compra'
 			req.params.qtd = req.params.qtdTotal
 			if(data.length < 1){				
 				req.params.qtdDisponivel = req.params.qtdTotal
@@ -34,6 +84,7 @@ module.exports = function(server) {
 				
 				let lEstoque = new Estoque(req.params)
 				lEstoque.save(function(err) {
+		
 					if (err) {
 						res.json({status:404})
 					}else{
@@ -41,6 +92,7 @@ module.exports = function(server) {
 							if (err) {
 								res.json({status:404})
 							}else{
+								
 								res.status(201)
 								res.json({status:200})
 							}
@@ -75,8 +127,8 @@ module.exports = function(server) {
 				})
 			}
 
-		 })	
-	})
+		 })	 
+	}) 
 	
 	
 	
