@@ -27,6 +27,8 @@ module.exports = function(server) {
 			if (err){
 				res.json({status:404})
 				}else{
+				req.params.movimento = 'saida'
+				req.params.tipoDocumento = 'venda'
 				novoMovimentacaoEstoque(req.params,function(err,docs){
 					if (err) {
 						res.json({status:404})
@@ -72,62 +74,16 @@ module.exports = function(server) {
 	server.get('/estoque',lEstoque.query())
 	server.get('/move',MoveEstoque.query())
 	server.post('/estoque',(req,res,next)=>{
-
-	
-		getqtdEstoque(req.params,function(data){
-			req.params.movimento = 'entrada'
-			req.params.tipoDocumento = 'compra'
-			req.params.qtd = req.params.qtdTotal
-			if(data.length < 1){				
-				req.params.qtdDisponivel = req.params.qtdTotal
-				req.params.qtdAlocada = 0
-				
-				let lEstoque = new Estoque(req.params)
-				lEstoque.save(function(err) {
-		
-					if (err) {
-						res.json({status:404})
-					}else{
-						novoMovimentacaoEstoque(req.params, function(err){
-							if (err) {
-								res.json({status:404})
-							}else{
-								
-								res.status(201)
-								res.json({status:200})
-							}
-						})
-
-					}
-				})
+		req.params.movimento = 'entrada'
+		req.params.tipoDocumento = 'compra'
+ 		novoMovimentacaoEstoque(req.params,function(err,docs){
+			if (err) {
+				res.json({status:404})
+			}else{
+				res.status(201)
+				res.json({status:200})
 			}
-			else{
-				data = data[0]
-				const reqValorTotal = parseInt(req.params.qtdTotal);
-				const qtdTotal = reqValorTotal + data.qtdTotal
-				const qtdDisponivel = reqValorTotal + data.qtdDisponivel
-				req.params.qtdTotal = qtdTotal
-				req.params.qtdDisponivel = qtdDisponivel
-				req.params.qtdAlocada = data.qtdAlocada
-				req.params._id = data._id
-				const dados = req.params
-				atualizarEstoque({_id: data._id},req.params,(linhasAfetadas)=>{
-					if(linhasAfetadas <= 0 ) {		
-						res.json({status:404})
-					}else{
-						novoMovimentacaoEstoque(req.params, function(err){
-							if (err) {
-								res.json({status:404})
-							}else{
-								res.status(201)
-								res.json({status:200})
-							}
-						})
-					}
-				})
-			}
-
-		 })	 
+		})
 	}) 
 	
 	

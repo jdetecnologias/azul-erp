@@ -19,17 +19,17 @@ const MovimentacaoEstoqueSchema = new mongoose.Schema(
 			required:true,
 			enum: ['entrada','saida','alocado']
 		}
-		,saldoTotal: {
+		,qtdTotal: {
 			type: Number,
 			required: true,
 			min:0
 		}
-		,saldoDisponivel: {
+		,qtdDisponivel: {
 			type: Number,
 			required: true,
 			min:0
 		}
-		,saldoAlocado: {
+		,qtdAlocada: {
 			type: Number,
 			required: true,
 			min:0

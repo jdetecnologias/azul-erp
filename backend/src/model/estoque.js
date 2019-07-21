@@ -7,7 +7,7 @@ const EstoqueSchema = new mongoose.Schema(
 		codigo: 	{type:String, required:true}	,
 		qtdTotal: 	{type:Number,required:true}	,
 		qtdDisponivel: {type:Number, required:true},
-		qtdAlocada:{type:Number, required:true}
+		qtdAlocada:{type:Number, required:true} 
 	}
 )
 
