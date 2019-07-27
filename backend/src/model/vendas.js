@@ -10,8 +10,8 @@ const VendasSchema = new mongoose.Schema(
 	{
 		nomeCliente: 	{type:String, required:true}	,
 		itens: 	[ItensSchema],
-                valorTotalPedido:{type:Number, required:true},
-		status: {type: String, required: false, uppercase:true, enum: ['PAGO','PENDENTE','AGENDADO']}
+                valorTotalPedido:{type:String, required:true},
+		status: {type: String, required: false, uppercase:true, enum: ['PAGO','PENDENTE','CANCELADA']}
 	}
 )
 

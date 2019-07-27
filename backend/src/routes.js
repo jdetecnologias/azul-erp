@@ -11,6 +11,7 @@ const MoveEstoque = restifyMongoose(MovimentacaoEstoque)
 const Sales = restifyMongoose(Vendas)
 const  lEstoque = restifyMongoose(Estoque)
 const  getqtdEstoque = require('./funcoes/estoque')
+const atualizarVenda = require('./funcoes/atualizarStatusVenda')
 const atualizarEstoque = require('./funcoes/atualizarEstoque')
 module.exports = function(server) {
 	
@@ -37,36 +38,6 @@ module.exports = function(server) {
 						res.json({status:200})
 					}
 				})
-				
-				/*itens.map(item=>{
-					let params = {}
-					params.codigo = item.produto
-					params.movimento = 'saida'
-					params.tipoDocumento = 'venda' 
-					params.qtd = item.qtd
-					getqtdEstoque(params,function(data){
-						data = data[0]
-						params._id = data._id 
-						if(req.params.status == 'PENDENTE'){
-							params.qtdTotal = data.qtdTotal
-							params.qtdDisponivel = data.qtdTotal - item.qtd
-							params.qtdAlocada = item.qtd + data.qtdAlocada
-						}else{ 
-							params.qtdTotal = data.qtdTotal - item.qtd
-							params.qtdDisponivel = +params.qtdTotal
-							params.qtdAlocada = data.qtdAlocada	 
-						} 
-
-						novoMovimentacaoEstoque(params, function(err){
-							if (err) {
-								res.json({status:404})
-							}else{
-								res.status(201)
-								res.json({status:200})
-							}
-						})// novoMovimentacaoEstoque
-					})	// getqtdEstoque
-				})*/ // itens.map*/
 			}//else
 		})// vendas.save
 	})//server.post
@@ -87,7 +58,31 @@ module.exports = function(server) {
 	}) 
 	
 	
-	
+server.put('/finalizarVenda',(req,res,next)=>{
+	req.params.status = 'PAGO'
+	atualizarVenda(req.params,function(numeroLinhasAfetadas){
+		if(numeroLinhasAfetadas <= 0 ){
+			res.json({status:404})
+		}
+		else{
+			res.status(200)
+			res.json({status:200})
+		}
+	})
+})	
+
+server.put('/cancelarVenda',(req,res,next)=>{
+		req.params.status = 'CANCELADA'
+	atualizarVenda(req.params,function(numeroLinhasAfetadas){
+		if(numeroLinhasAfetadas <= 0 ){
+			res.json({status:404})
+		}
+		else{
+			res.status(200)
+			res.json({status:200})
+		}
+	})
+})
 	
 
 	
