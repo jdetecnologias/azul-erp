@@ -59,28 +59,36 @@ module.exports = function(server) {
 	
 	
 server.put('/finalizarVenda',(req,res,next)=>{
-	req.params.status = 'PAGO'
-	atualizarVenda(req.params,function(numeroLinhasAfetadas){
-		if(numeroLinhasAfetadas <= 0 ){
-			res.json({status:404})
-		}
-		else{
-			res.status(200)
-			res.json({status:200})
-		}
+	req.params.status = 'PAGO' 
+	atualizarVenda(req.params,function(venda){
+		venda = venda[0]
+		venda.tipoDocumento = 'vendaFinalizada'
+		venda.movimento = 'saida'
+		novoMovimentacaoEstoque(venda,function(err,docs){
+			if (err) {
+				res.json({status:404})
+			}else{
+				res.status(201)
+				res.json({status:200})
+			}	
+		})
 	})
 })	
 
 server.put('/cancelarVenda',(req,res,next)=>{
 		req.params.status = 'CANCELADA'
-	atualizarVenda(req.params,function(numeroLinhasAfetadas){
-		if(numeroLinhasAfetadas <= 0 ){
-			res.json({status:404})
-		}
-		else{
-			res.status(200)
-			res.json({status:200})
-		}
+	atualizarVenda(req.params,function(venda){
+		venda = venda[0]
+		venda.tipoDocumento = 'vendaCancelada'
+		venda.movimento = 'saida'
+		novoMovimentacaoEstoque(venda,function(err,docs){
+			if (err) {
+				res.json({status:404})
+			}else{
+				res.status(201)
+				res.json({status:200})
+			}	
+		})
 	})
 })
 	
