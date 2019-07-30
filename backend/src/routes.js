@@ -21,25 +21,69 @@ module.exports = function(server) {
 	server.post('/entrada',MoveEstoque.insert())
 	server.get('/vendas',Sales.query())
 	
-	server.post('/vendas',(req,res,next)=>{
-		const Venda = new Vendas(req.params)
-		
-		Venda.save(function(err){
-			if (err){
-				res.json({status:404})
-				}else{
-				req.params.movimento = 'saida'
-				req.params.tipoDocumento = 'venda'
-				novoMovimentacaoEstoque(req.params,function(err,docs){
-					if (err) {
+ server.post('/vendas',(req,res,next)=>{
+
+let logError = []		
+		const validarEstoque =   function(){
+
+				let counter = 0
+				const itens = req.params.itens 
+				 itens.map(item=>{
+					 getqtdEstoque(item,function(data){
+						 counter++
+
+						data = data[0] 
+						if(data.length <=0){
+							
+							logError.push({erro: 'Não existe o produto no estoque',produto: item.produto})
+						}
+						else{
+							
+							if(data.qtdDisponivel < item.qtd){
+
+								logError.push({erro: 'Não há quantidade disponíveis no estoque. QTD DISPONÍVEL:'+data.qtdDisponivel+' QTD SOLICITADA:'+item.qtd,produto: item.produto})
+							}		
+						}
+						
+						if(counter === itens.length){
+							salvarVenda()
+						}
+					})
+	
+				})	
+				
+
+		}
+
+		 function salvarVenda(){
+
+			if(logError.length === 0){
+			const Venda = new Vendas(req.params)
+			
+				Venda.save(function(err){
+					if (err){
 						res.json({status:404})
-					}else{
-						res.status(201)
-						res.json({status:200})
-					}
-				})
-			}//else
-		})// vendas.save
+						}else{
+						req.params.movimento = 'saida'
+						req.params.tipoDocumento = 'venda'
+						novoMovimentacaoEstoque(req.params,function(err,docs){
+							if (err) {
+								res.json({status:404})
+							}else{
+								console.log('venda realizada com sucesso')
+								res.status(201)
+								res.json({status:200})
+							}
+						})
+					}//else
+				})// vendas.save
+			}
+			else{ 
+				console.log(logError)
+				res.json({status:404,logError})
+			}		
+		 }
+		 			validarEstoque()
 	})//server.post
 	
 	server.get('/estoque',lEstoque.query())
