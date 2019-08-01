@@ -13,6 +13,9 @@ const  lEstoque = restifyMongoose(Estoque)
 const  getqtdEstoque = require('./funcoes/estoque')
 const atualizarVenda = require('./funcoes/atualizarStatusVenda')
 const atualizarEstoque = require('./funcoes/atualizarEstoque')
+const relatorioFinanceiro = require('./funcoes/financeiro')
+
+
 module.exports = function(server) {
 	
 	server.get('/produto',product.query())
@@ -136,7 +139,13 @@ server.put('/cancelarVenda',(req,res,next)=>{
 	})
 })
 	
-
+server.get('/financeiro',(req,res,next)=>{
+	relatorioFinanceiro(function(data){
+		res.json(data)
+	})
+	
+	
+})
 	
 	
 	
