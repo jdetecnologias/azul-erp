@@ -11,10 +11,14 @@ const MoveEstoque = restifyMongoose(MovimentacaoEstoque)
 const Sales = restifyMongoose(Vendas)
 const  lEstoque = restifyMongoose(Estoque)
 const  getqtdEstoque = require('./funcoes/estoque')
-const atualizarVenda = require('./funcoes/atualizarStatusVenda')
+const atualizarVenda = require('./funcoes/atualizarVenda')
+const obterVenda = require('./funcoes/obterVenda')
 const atualizarEstoque = require('./funcoes/atualizarEstoque')
 const relatorioFinanceiro = require('./funcoes/financeiro')
-
+const validarEstoque = require('./funcoes/validarEstoque')
+const listaItensModificados = require('./funcoes/EditVenda')
+const f = require('./funcoes/funcoes')()
+const salvarVenda = require('./funcoes/salvarVenda')
 
 module.exports = function(server) {
 	
@@ -23,70 +27,38 @@ module.exports = function(server) {
 	server.get('/entrada',MoveEstoque.query())
 	server.post('/entrada',MoveEstoque.insert())
 	server.get('/vendas',Sales.query())
+
+server.post('/atualizarVenda', (req,res,next)=>{
+
+	obterVenda(req.params,function(vendaAntiga){
+		vendaAntiga = vendaAntiga[0]
+		let vendaAtualizar = f.copiarObjeto(req.params)
+		 vendaAtualizar.itens = listaItensModificados(vendaAntiga.itens,req.params.itens)
+		console.log('modificados',vendaAtualizar)
+		
+		vendaAtualizar.movimento = 'entrada'
+		vendaAtualizar.tipoDocumento = 'venda'
+		novoMovimentacaoEstoque(vendaAtualizar,function(err,docs){	
+					console.log('Movimentacao passei por aqui')				
+			if(err){
+				res.json({status:404})
+			}else{
+				console.log('passei por aqui')
+				atualizarVenda(req.params,function(err,docs){
+					if (err) {
+						res.json({status:404}) 		
+					}else{
+						res.status(201)
+						res.json({status:200})
+					}		
+				},true)
+			}
+		})	
+	})						
+})
 	
  server.post('/vendas',(req,res,next)=>{
-
-let logError = []		
-		const validarEstoque =   function(){
-
-				let counter = 0
-				const itens = req.params.itens 
-				 itens.map(item=>{
-					 getqtdEstoque(item,function(data){
-						 counter++
-
-						data = data[0] 
-						if(data.length <=0){
-							
-							logError.push({erro: 'Não existe o produto no estoque',produto: item.produto})
-						}
-						else{
-							
-							if(data.qtdDisponivel < item.qtd){
-
-								logError.push({erro: 'Não há quantidade disponíveis no estoque. QTD DISPONÍVEL:'+data.qtdDisponivel+' QTD SOLICITADA:'+item.qtd,produto: item.produto})
-							}		
-						}
-						
-						if(counter === itens.length){
-							salvarVenda()
-						}
-					})
-	
-				})	
-				
-
-		}
-
-		 function salvarVenda(){
-
-			if(logError.length === 0){
-			const Venda = new Vendas(req.params)
-			
-				Venda.save(function(err){
-					if (err){
-						res.json({status:404})
-						}else{
-						req.params.movimento = 'saida'
-						req.params.tipoDocumento = 'venda'
-						novoMovimentacaoEstoque(req.params,function(err,docs){
-							if (err) {
-								res.json({status:404})
-							}else{
-								console.log('venda realizada com sucesso')
-								res.status(201)
-								res.json({status:200})
-							}
-						})
-					}//else
-				})// vendas.save
-			}
-			else{ 
-				console.log(logError)
-				res.json({status:404,logError})
-			}		
-		 }
-		 			validarEstoque()
+		salvarVenda(req,res,next)
 	})//server.post
 	
 	server.get('/estoque',lEstoque.query())

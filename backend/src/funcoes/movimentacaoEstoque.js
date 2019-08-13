@@ -6,8 +6,7 @@ module.exports =  function gravarMovimentacaoEstoque(aReqparams,callback) {
 	const  getqtdEstoque = require('../funcoes/estoque')
 	const atualizarEstoque = require('../funcoes/atualizarEstoque')
 	const Estoque = require('../model/estoque')
-	console.log(aReqparams)
-	
+	const funcoes =  require('./funcoes')()
 	const itens = aReqparams.itens
 		switch(aReqparams.tipoDocumento){
 			case 'venda':
@@ -21,15 +20,14 @@ module.exports =  function gravarMovimentacaoEstoque(aReqparams,callback) {
 						data = data[0]
 
 						if(aReqparams.status == 'PENDENTE'){
-							params.qtdTotal = data.qtdTotal
-							params.qtdDisponivel = data.qtdDisponivel - item.qtd
-							params.qtdAlocada = item.qtd + data.qtdAlocada
+							params.qtdTotal = funcoes.somar(data.qtdTotal,0)
+							params.qtdDisponivel = funcoes.subtrair(data.qtdDisponivel,item.qtd)
+							params.qtdAlocada = funcoes.somar(item.qtd,data.qtdAlocada)
 						}else{ 
-							params.qtdTotal = data.qtdTotal - item.qtd
-							params.qtdDisponivel = data.qtdDisponivel - item.qtd
-							params.qtdAlocada = data.qtdAlocada	  
+							params.qtdTotal = funcoes.subtrair(data.qtdTotal,item.qtd)
+							params.qtdDisponivel = funcoes.subtrair(data.qtdDisponivel,item.qtd)
+							params.qtdAlocada = funcoes.somar(data.qtdAlocada,0)	  
 						} 
-
 						lEstoque = new MovimentacaoEstoque(params)
 						lEstoque.save(function(err){
 							if(!err){
@@ -69,11 +67,11 @@ module.exports =  function gravarMovimentacaoEstoque(aReqparams,callback) {
 					else{
 						data = data[0]
 						const reqValorTotal = parseInt(aReqparams.qtdTotal);
-						const qtdTotal = reqValorTotal + data.qtdTotal
-						const qtdDisponivel = reqValorTotal + data.qtdDisponivel
-						aReqparams.qtdTotal = qtdTotal
-						aReqparams.qtdDisponivel = qtdDisponivel
-						aReqparams.qtdAlocada = data.qtdAlocada
+						const qtdTotal = funcoes.somar(reqValorTotal,data.qtdTotal)
+						const qtdDisponivel = funcoes.somar(reqValorTotal,data.qtdDisponivel)
+						aReqparams.qtdTotal = funcoes.somar(qtdTotal)
+						aReqparams.qtdDisponivel = funcoes.somar(qtdDisponivel)
+						aReqparams.qtdAlocada = funcoes.somar(data.qtdAlocada)
 						aReqparams._id = data._id
 						atualizarEstoque({_id: data._id},aReqparams,(linhasAfetadas)=>{
 							if(linhasAfetadas <= 0 ) {		
@@ -101,9 +99,9 @@ module.exports =  function gravarMovimentacaoEstoque(aReqparams,callback) {
 					params.movimento = aReqparams.movimento
 					getqtdEstoque(params,function(data){
 						data = data[0]
-						params.qtdTotal = data.qtdTotal - item.qtd
-						params.qtdDisponivel = data.qtdDisponivel
-						params.qtdAlocada =  data.qtdAlocada - item.qtd
+						params.qtdTotal = funcoes.subtrair(data.qtdTotal,item.qtd)
+						params.qtdDisponivel = funcoes.somar(data.qtdDisponivel)
+						params.qtdAlocada =  funcoes.somar(data.qtdAlocada,item.qtd)
 	
 						lEstoque = new MovimentacaoEstoque(params)
 						lEstoque.save(function(err){
@@ -125,10 +123,9 @@ module.exports =  function gravarMovimentacaoEstoque(aReqparams,callback) {
 					params.movimento = aReqparams.movimento
 					getqtdEstoque(params,function(data){
 						data = data[0]
-						params.qtdTotal = data.qtdTotal
-						params.qtdDisponivel = data.qtdDisponivel + item.qtd
-						params.qtdAlocada =  data.qtdAlocada - item.qtd
-	
+						params.qtdTotal = funcoes.somar(data.qtdTotal,0)
+						params.qtdDisponivel = funcoes.somar(data.qtdDisponivel,item.qtd)
+						params.qtdAlocada =  funcoes.subtrair(data.qtdAlocada,item.qtd)
 						lEstoque = new MovimentacaoEstoque(params)
 						lEstoque.save(function(err){
 							if(!err){
@@ -140,5 +137,8 @@ module.exports =  function gravarMovimentacaoEstoque(aReqparams,callback) {
 				})//itens.map0
 				callback(null)				
 			break
+			case 'realocacao': // neste caso deve ser instanciado cada item
+				
+			break;
 		}
 }
