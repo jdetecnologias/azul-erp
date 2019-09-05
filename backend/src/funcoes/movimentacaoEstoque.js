@@ -101,7 +101,7 @@ module.exports =  function gravarMovimentacaoEstoque(aReqparams,callback) {
 						data = data[0]
 						params.qtdTotal = funcoes.subtrair(data.qtdTotal,item.qtd)
 						params.qtdDisponivel = funcoes.somar(data.qtdDisponivel)
-						params.qtdAlocada =  funcoes.somar(data.qtdAlocada,item.qtd)
+						params.qtdAlocada =  funcoes.subtrair(data.qtdAlocada,item.qtd)
 	
 						lEstoque = new MovimentacaoEstoque(params)
 						lEstoque.save(function(err){
