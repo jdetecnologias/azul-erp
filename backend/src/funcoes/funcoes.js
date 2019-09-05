@@ -7,11 +7,11 @@ module.exports = function(){
 			return novoObjeto
 		}
 		
-	const somar = function (n1,n2){
+	const somar = function (n1 = 0,n2 = 0){
 		return parseFloat(n1)+parseFloat(n2)
 	}
 	
-	const subtrair =  function (n1,n2){
+	const subtrair =  function (n1 = 0,n2 = 0){
 			return parseFloat(n1)-parseFloat(n2)
 		}
 		
