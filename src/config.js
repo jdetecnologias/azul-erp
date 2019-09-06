@@ -1,5 +1,5 @@
 module.exports = {
-	port: 3003,
+	port: process.env.port || 3003,
 	name: 'Azul ERP',
 	env:  'development',
 	base_url: 'https://azul-api.herokuapp.com',
