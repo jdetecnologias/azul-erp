@@ -20,5 +20,8 @@
     "restify-errors": "^8.0.0",
     "restify-mongoose": "^4.0.0",
     "restify-plugins": "^1.6.0"
+  },
+    "engines": {
+    "node": "10.x"
   }
 }
