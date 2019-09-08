@@ -6,8 +6,9 @@ const restifyPlugins = require('restify-plugins');
 
 const server = restify.createServer({
 	name: config.name,
-	version: config.version,
+	version: config.version
 });
+console.log('CHEGUEI AQUI --------------------------------------->')
 server.pre(cors.preflight);  
 server.use(cors.actual); 
 server.use(restifyPlugins.jsonBodyParser({ mapParams: true }));
