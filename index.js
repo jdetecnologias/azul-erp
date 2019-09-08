@@ -15,19 +15,22 @@ server.use(restifyPlugins.jsonBodyParser({ mapParams: true }));
 server.use(restifyPlugins.acceptParser(server.acceptable));
 server.use(restifyPlugins.queryParser({ mapParams: true }));
 server.use(restifyPlugins.fullResponse());
-console.log('CHEGUEI AQUI --------------------------------------->')
+
 server.listen(config.port, () => {
 	// establish connection to mongodb
 	mongoose.Promise = global.Promise;
 	mongoose.connect(config.db.uri, { useMongoClient: true });
 
 	const db = mongoose.connection;
-
+	console.log('BEFORE')
 	db.on('error', (err) => {
+		if(err){
+			console.log('Deu Erro Camarada')
+		}
 	    console.error(err);
 	    process.exit(1);
 	});
-
+	console.log('LATER')
 	db.once('open', () => {
 	    require('./src/routes')(server);
 	    console.log(`Server is listening on port ${config.port}`);
