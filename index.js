@@ -8,14 +8,14 @@ const server = restify.createServer({
 	name: config.name,
 	version: config.version
 });
-console.log('CHEGUEI AQUI --------------------------------------->')
+
 server.pre(cors.preflight);  
 server.use(cors.actual); 
 server.use(restifyPlugins.jsonBodyParser({ mapParams: true }));
 server.use(restifyPlugins.acceptParser(server.acceptable));
 server.use(restifyPlugins.queryParser({ mapParams: true }));
 server.use(restifyPlugins.fullResponse());
-
+console.log('CHEGUEI AQUI --------------------------------------->')
 server.listen(config.port, () => {
 	// establish connection to mongodb
 	mongoose.Promise = global.Promise;
