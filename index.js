@@ -25,7 +25,7 @@ server.listen(config.port, () => {
 	console.log('BEFORE')
 	db.on('error', (err) => {
 		if(err){
-			console.log(err)
+			console.log('ERROROROROOROROROOROROR',err)
 		}
 	    console.error(err);
 	    process.exit(1);
