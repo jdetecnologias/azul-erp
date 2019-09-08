@@ -25,7 +25,7 @@ server.listen(config.port, () => {
 	console.log('BEFORE')
 	db.on('error', (err) => {
 		if(err){
-			console.log('Deu Erro Camarada')
+			console.log(err)
 		}
 	    console.error(err);
 	    process.exit(1);
