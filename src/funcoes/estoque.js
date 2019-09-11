@@ -15,7 +15,7 @@ var url = config.db.uri;
 module.exports =  function (params,callback){
 MongoClient.connect(url, function(err, dbk) {
   if (err) throw err;
-  var dbo = dbk.db("azul");
+  var dbo = dbk.db(config.db.collection);
 	dbo.collection("estoques").find({codigo: params.codigo?params.codigo:params.produto}).toArray(function(err, result) {
     if (err) throw err;
 	callback(result)

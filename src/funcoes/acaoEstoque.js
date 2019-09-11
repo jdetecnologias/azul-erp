@@ -7,7 +7,7 @@ const {ObjectId} = require('mongodb')
 module.exports = function (produto,callback){
 MongoClient.connect(url, function(err, dbk) {
   if (err) throw err;
-  var dbo = dbk.db("azul");
+  var dbo = dbk.db(config.db.collection);
   var myquery ={_id: ObjectId(produto._id)};
   delete produto._id
   var newvalues =  {$set:dados}: 
